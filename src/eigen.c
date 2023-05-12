@@ -74,10 +74,11 @@ double power_iteration(Matrix *A, double *v) {
 
   for(int it = 0; it < 1e4; it++) {
     lambda_prev = lambda;
-    // printf("\n===== Iteration %d =====\n", it+1);
-    matrix_times_vector(A, v, Av);
+
+    mat_mul_vector_blas(A, v, Av);
+
     lambda = inner(v, Av, n);
-    // printf("λ = %.9e\n", lambda);
+
     diff = fabs((lambda-lambda_prev) / lambda_prev);
     for(int i = 0; i < n; i++) v[i] = Av[i];
     normalize(v, n);

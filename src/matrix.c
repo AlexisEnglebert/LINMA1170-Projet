@@ -5,6 +5,76 @@
 
 #include "matrix.h"
 
+
+
+lapack_int mat_inv_blas(Matrix* A)
+{
+    int ipiv[A->n+1];
+    lapack_int ret;
+
+    ret =  LAPACKE_dgetrf(LAPACK_COL_MAJOR,
+						A->n,
+						A->n,
+						A->data,
+						A->n,
+						ipiv);
+
+    if (ret !=0)
+        return ret;
+
+    ret = LAPACKE_dgetri(LAPACK_COL_MAJOR,
+						A->n,
+						A->data,
+						A->n,
+						ipiv);
+    return ret;
+}
+
+
+int mat_mul_blas(Matrix* A, Matrix* B, Matrix* C)
+{
+	
+	int m = A->m;
+	int k = A->n; 
+	int n = B->n;
+
+	cblas_dgemm(CblasRowMajor, 
+			CblasNoTrans, 
+			CblasNoTrans,
+			m,
+			n,
+			k,
+			1.0f,
+			A->data, 
+			k,
+			B->data,
+			n,
+			0.0, 
+			C->data,
+			n );
+
+	return 0;
+}
+
+int mat_mul_vector_blas(Matrix* A, double* vector, double* out)
+{
+	cblas_dgemv(CblasRowMajor,
+			CblasNoTrans,
+			A->m,
+			A->n,
+			1.0,
+			A->data,
+			A->n,
+			vector,
+			1.0,
+			0, //TODO:  see if we need beta for the deflation / eigen value calculation
+			out,
+			1.0 );
+	
+	return 0;
+}
+
+
 Matrix *allocate_matrix(int m, int n)
 {
     Matrix *mat = malloc(sizeof(Matrix));
@@ -81,7 +151,6 @@ int cmp(const void * a, const void * b) {
 
 int compute_permutation(int * perm, double * coord, int n_nodes) {
 
-	// // We assume perm is allocated but not initialized
 	// for(int i = 0; i < n_nodes; i++) 
 	// 	perm[i] = i;
 

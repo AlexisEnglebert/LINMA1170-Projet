@@ -1,5 +1,8 @@
 #pragma once
 #include <errno.h>
+#include <cblas.h>
+#include <lapack.h>
+#include <lapacke.h>
 
 
 typedef struct Triplet {
