@@ -1,7 +1,11 @@
 # LINMA1170-Projet
 
 # Instalation
-You need [blas](git@github.com:xianyi/OpenBLAS.git)
+You need: 
+1. [OpenBlas](https://github.com/xianyi/OpenBLAS)
+2. [GMSH](https://gitlab.onelab.info/gmsh/gmsh)
+
+These library *MUST* be in the parent directory of the projet *NOT* inside.
 
 # Compilation 
 ```code
