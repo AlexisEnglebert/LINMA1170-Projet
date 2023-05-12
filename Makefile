@@ -2,11 +2,13 @@ CC := gcc
 CFLAGS=-Wall -g -std=gnu99 -O2 #Add -Werror
 
 GMSH_DIR := ../gmsh-sdk
-INC_DIR := -I $(GMSH_DIR)/include 
-LIB_DIR := -L $(GMSH_DIR)/lib 
+BLAS_DIR := ../OpenBlas
 
-LDFLAGS := -Wl,-rpath,$(GMSH_DIR)/lib
-LDLIBS := -lgmsh -llapack -lm
+INC_DIR := -I $(GMSH_DIR)/include -I $(BLAS_DIR)/include
+LIB_DIR := -L $(GMSH_DIR)/lib -L $(BLAS_DIR)/lib
+
+LDFLAGS := -Wl,-rpath,$(GMSH_DIR)/lib,-rpath,$(BLAS_DIR)/lib
+LDLIBS := -lgmsh -llapack -lm -lopenblas
 
 SRC_DIRS = src
 OUTDIR=build
