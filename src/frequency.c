@@ -1,6 +1,7 @@
 #include "frequency.h"
 
-double get_k_frequency(double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh)
+double get_k_frequency(FILE* file, double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh,
+                    double** displacements, int* n_nodes)
 {
     printf("got for l : %.4lf\n",l);
 	double E = 0.7e11;  // Young's modulus for Aluminum
@@ -15,6 +16,14 @@ double get_k_frequency(double r1, double r2, double e, double l, double meshSize
 	double * coord;
 	assemble_system(&K, &M, &coord, &boundary_nodes, &n_boundary_nodes, E, nu, rho);
 
+    if(displacements != NULL){
+        *displacements = calloc(sizeof **displacements, k*K->n);
+    }
+
+    if(n_nodes != NULL){
+        *n_nodes = K->n;
+    }
+
 	Matrix *K_new;
 	Matrix *M_new;
 	remove_bnd_lines(K, M, boundary_nodes, n_boundary_nodes, &K_new, &M_new, NULL);
@@ -26,9 +35,6 @@ double get_k_frequency(double r1, double r2, double e, double l, double meshSize
 	mat_mul_blas(K_new,M_new,KM_new);
     /***********************************************$*/
     
-
-	printf("finished inversing matrix\n");
-
 	// Power iteration + deflation to find k largest eigenvalues
 	Matrix * A = KM_new;
 	double * v = malloc(A->m * sizeof(double));
@@ -47,24 +53,22 @@ double get_k_frequency(double r1, double r2, double e, double l, double meshSize
 			}
 		}
         
-        printf("f = %.3lf\n", freq);
+        if(file != NULL)
+            fprintf(file, "%.9lf ", freq);
 
-        if(vis_in_gmsh){
-            double * vall = calloc(K->m, sizeof(double));
+        if(vis_in_gmsh && displacements != NULL){
             int iv = 0, i_bnd = 0; 
             for(int i = 0; i < K->m/2; i++) {
                 if(i_bnd < n_boundary_nodes && i == boundary_nodes[i_bnd]) {
                     i_bnd++;
                     continue;
                 }
-                vall[2*(i)]   = v[2*iv];
-                vall[2*(i)+1] = v[2*iv+1];
+                (*displacements)[l*K->n+2*(i)]   = v[2*iv];
+                (*displacements)[l*K->n+2*(i)+1] = v[2*iv+1];
                 iv++;
             }
-            visualize_in_gmsh(vall, K->m/2);
         }
 	}
-	printf("f = %.3lf\n", freq);
 
     free_matrix (K);
 	free_matrix (M);
@@ -94,7 +98,7 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
         
         printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
 
-        freq = get_k_frequency(r1, r2, e, middle, meshSizeFactor,2 ,false);
+        freq = get_k_frequency(NULL, r1, r2, e, middle, meshSizeFactor,2 ,false, NULL, NULL);
 
         if(fabs(target_freq - freq) < tolerence){
             return middle;
