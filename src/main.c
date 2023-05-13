@@ -36,28 +36,25 @@ int main (int argc, char *argv[]) {
 	gmshOptionSetNumber("PostProcessing.AnimationDelay", 0.05, &ierr); 	
 	
 
-
 	int n_vibration_modes = atoi(argv[1]);
 	double meshSizeFactor = 0.3;
 
 
-	double correct_l = bin_search_l(6e-3, 11e-3,38e-3,0.3, meshSizeFactor, 1e-1);
+	double correct_l = bin_search_l(6e-3, 11e-3,38e-3,0.3, meshSizeFactor, 1e-2);
 	printf("correct_l = %lf\n", correct_l);
 
 	double* animation_points;
 	int n_nodes;
 	
 	
-	
 	get_k_frequency(file, 6e-3, 11e-3, 38e-3, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
 
 
 	for(int i = 0; i < n_vibration_modes+1; i++){
-		for(int j = i+1; j < n_vibration_modes+1; j++){
-			if (i == j) continue;
-			generate_animation(i, j, animation_points, n_nodes);
- 		}
-	}
+		if(i==0) continue;
+		generate_animation(0, i, animation_points, n_nodes);
+ 	}
+	
 	
 	gmshViewCombine("steps", "all", 1, 1, &ierr);
 	gmshOptionSetNumber("View.AdaptVisualizationGrid", 1, &ierr); 
@@ -65,8 +62,6 @@ int main (int argc, char *argv[]) {
 	gmshOptionSetNumber("View.SmoothNormals", 1, &ierr); 
 
 	gmshFltkRun(&ierr);
-
 	
-
 	return 0;
 }
