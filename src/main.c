@@ -29,6 +29,7 @@ int main (int argc, char *argv[]) {
 	gmshInitialize(argc, argv, 0, 0, &ierr);
 
 	gmshOptionSetNumber("General.RotationX", 0, &ierr); 	
+	gmshOptionSetNumber("General.Antialiasing", 1, &ierr); 	
 	gmshOptionSetNumber("Mesh.SurfaceEdges", 0, &ierr); 	
 	gmshOptionSetNumber("Geometry.Points", 0, &ierr); 	
 	gmshOptionSetNumber("Geometry.Curves", 0, &ierr); 	
@@ -61,6 +62,8 @@ int main (int argc, char *argv[]) {
 	
 	gmshViewCombine("steps", "all", 1, 1, &ierr);
 	gmshOptionSetNumber("View.AdaptVisualizationGrid", 1, &ierr); 
+	gmshOptionSetNumber("View.LightLines", 0, &ierr); 
+	gmshOptionSetNumber("View.SmoothNormals", 1, &ierr); 
 
 	gmshFltkRun(&ierr);
 
