@@ -49,7 +49,6 @@ int main (int argc, char *argv[]) {
 	
 	
 	
-	
 	get_k_frequency(file, 6e-3, 11e-3, 38e-3, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
 
 

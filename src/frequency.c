@@ -60,6 +60,9 @@ double get_k_frequency(FILE* file, double r1, double r2, double e, double l, dou
         if(file != NULL)
             fprintf(file, "%.9lf ", freq);
 
+        if(l%2 != 0)
+            printf("Audible Frequency %.9f\n", freq);
+
         if(vis_in_gmsh && displacements != NULL){
             int iv = 0, i_bnd = 0; 
             for(int i = 0; i < K->m/2; i++) {
