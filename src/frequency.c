@@ -35,7 +35,6 @@ double get_frequency(double r1, double r2, double e, double l, double meshSizeFa
 		lambda = power_iteration(A, v);
 		freq = 1./(2*M_PI*sqrt(lambda));
 
-		//printf("lambda = %.9e, f = %.3lf\n", lambda, freq);
 
 		// Deflate matrix
 		for(int i = 0; i < A->m; i++){
@@ -44,6 +43,7 @@ double get_frequency(double r1, double r2, double e, double l, double meshSizeFa
 			}
 		}
 	}
+	printf("f = %.3lf\n", freq);
 
     free_matrix (K);
 	free_matrix (M);
@@ -55,4 +55,38 @@ double get_frequency(double r1, double r2, double e, double l, double meshSizeFa
     free(v);
 	free(boundary_nodes);
     return freq;
+}
+
+double bin_search_l(double r1, double r2, double e, double maxL, double meshSizeFactor, double tolerence){
+    double start = 0;
+    double end = maxL;
+    int n = 0;
+    int n_max = (int)10e4;
+    double target_freq = 784.0;
+    //Our target is 784
+    double freq = 0.0;
+    while(n < n_max){
+        double middle = (start + end) / 2.0;
+        if(start == end){
+            return middle;
+        }
+        
+        printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
+
+        freq = get_frequency(r1, r2, e, middle, meshSizeFactor);
+
+        if(fabs(target_freq - freq) < tolerence){
+            return middle;
+        }
+        
+        if(freq < target_freq){
+            end = middle;
+        }else if(freq > target_freq){
+            start = middle;
+        }else{
+            return middle;
+        }
+        n++;
+    }
+    return (start + end) / 2.0;
 }

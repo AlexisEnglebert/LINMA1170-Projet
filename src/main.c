@@ -37,12 +37,11 @@ int main (int argc, char *argv[]) {
 	int n_vibration_modes = atoi(argv[1]);
 
 
-
-	//TODO ICI QU'ON FAIT LE BINARY SEARCH...
-	double first_audible_freq = get_frequency(6e-3, 11e-3,38e-3,82e-3, 0.3);
-
-	printf("frequency = %.3lf\n", first_audible_freq);
-
+	//double freq = get_frequency(6e-3, 11e-3,38e-3, 0.085, 0.3);
+	double correct_l = bin_search_l(6e-3, 11e-3,38e-3,0.3, 0.3, 1e-1);
+	printf("correct_l = %lf\n", correct_l);
+	//double freq = get_frequency(6e-3, 11e-33, 38e-3, 0.085,0.3);
+	//printf("LA FAMEUSE FREQUENCE : %.3f \n", freq);
 
 	fclose(file);
 
