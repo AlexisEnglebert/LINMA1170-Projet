@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include "matrix.h"
 #include "elasticity.h"
 #include "math.h"
@@ -7,8 +9,7 @@
 #include "design.h"
 #include "eigen.h"
 
-double get_frequency(double r1, double r2, double e, double l, double meshSizeFactor);
-
+double get_k_frequency(double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh);
 
 //! OUI POUR L'INSTANT ON DÉFINIT QUEL PARAMÈTRE ON CHERCHE MAIS ÇA SERA MODULABLE APRÈS ......
 double bin_search_l(double r1, double r2, double e, double maxL, double meshSizeFactor, double tolerence);

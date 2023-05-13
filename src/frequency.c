@@ -1,7 +1,8 @@
 #include "frequency.h"
 
-double get_frequency(double r1, double r2, double e, double l, double meshSizeFactor)
+double get_k_frequency(double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh)
 {
+    printf("got for l : %.4lf\n",l);
 	double E = 0.7e11;  // Young's modulus for Aluminum
 	double nu = 0.3;    // Poisson coefficient
 	double rho = 3000;  // Density of Aluminum
@@ -19,22 +20,25 @@ double get_frequency(double r1, double r2, double e, double l, double meshSizeFa
 	remove_bnd_lines(K, M, boundary_nodes, n_boundary_nodes, &K_new, &M_new, NULL);
 
 	Matrix *KM_new = allocate_matrix(K_new->m, K_new->n);
-	
+
+    /*****************Méthode 1***********************/
 	mat_inv_blas(K_new);
 	mat_mul_blas(K_new,M_new,KM_new);
+    /***********************************************$*/
+    
 
 	printf("finished inversing matrix\n");
 
 	// Power iteration + deflation to find k largest eigenvalues
 	Matrix * A = KM_new;
 	double * v = malloc(A->m * sizeof(double));
-	double lambda, freq;
+	double lambda = 0.0;
+    double freq = 0.0;
 	
     //! 2 BECAUSE FIRST MODE IS INAUDIBLE !!!!!!!!!!
-	for(int l = 0; l < 2; l++) {
+	for(int l = 0; l < k; l++) {
 		lambda = power_iteration(A, v);
 		freq = 1./(2*M_PI*sqrt(lambda));
-
 
 		// Deflate matrix
 		for(int i = 0; i < A->m; i++){
@@ -42,6 +46,23 @@ double get_frequency(double r1, double r2, double e, double l, double meshSizeFa
 				A->a[i][j] -= lambda * v[i] * v[j];
 			}
 		}
+        
+        printf("f = %.3lf\n", freq);
+
+        if(vis_in_gmsh){
+            double * vall = calloc(K->m, sizeof(double));
+            int iv = 0, i_bnd = 0; 
+            for(int i = 0; i < K->m/2; i++) {
+                if(i_bnd < n_boundary_nodes && i == boundary_nodes[i_bnd]) {
+                    i_bnd++;
+                    continue;
+                }
+                vall[2*(i)]   = v[2*iv];
+                vall[2*(i)+1] = v[2*iv+1];
+                iv++;
+            }
+            visualize_in_gmsh(vall, K->m/2);
+        }
 	}
 	printf("f = %.3lf\n", freq);
 
@@ -61,7 +82,7 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
     double start = 0;
     double end = maxL;
     int n = 0;
-    int n_max = (int)10e4;
+    int n_max = (int)1000;
     double target_freq = 784.0;
     //Our target is 784
     double freq = 0.0;
@@ -73,7 +94,7 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
         
         printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
 
-        freq = get_frequency(r1, r2, e, middle, meshSizeFactor);
+        freq = get_k_frequency(r1, r2, e, middle, meshSizeFactor,2 ,false);
 
         if(fabs(target_freq - freq) < tolerence){
             return middle;

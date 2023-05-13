@@ -65,26 +65,6 @@ void p1_geometry(const double *x, double *detptr, double dxidx[2][2], double *dp
 }
 
 
-void p1_laplace_matrix (double alpha, double dphi[6], double det, double S[3][3]){
-
-  double d1dx = dphi[0];
-  double d1dy = dphi[1];
-  double d2dx = dphi[2];
-  double d2dy = dphi[3];
-  double d3dx = dphi[4];
-  double d3dy = dphi[5];
-  double BT[3][2] = {{d1dx, d1dy},
-		     {d2dx, d2dy},
-		     {d3dx, d3dy}};
-  for (int i=0;i < 3; i++){
-    for (int j=0;j < 3; j++){
-      S[i][j] = 0;
-      for (int k=0;k < 2; k++){
-	S[i][j] += alpha*det*0.5*BT[i][k]*BT[k][j];
-      }
-    }
-  }
-}
 
 int get_triangles_p1 (size_t ** elementTags, size_t * elementTags_n,
 		       size_t ** nodeTags, size_t * nodeTags_n) {

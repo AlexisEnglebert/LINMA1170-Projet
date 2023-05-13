@@ -30,6 +30,19 @@ lapack_int mat_inv_blas(Matrix* A)
     return ret;
 }
 
+lapack_int mat_lu_blas(Matrix* A, int* ipiv){
+    lapack_int ret;
+
+    ret =  LAPACKE_dgetrf(LAPACK_COL_MAJOR,
+						A->n,
+						A->n,
+						A->data,
+						A->n,
+						ipiv);
+	return ret;
+}
+
+
 
 int mat_mul_blas(Matrix* A, Matrix* B, Matrix* C)
 {
