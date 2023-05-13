@@ -199,7 +199,7 @@ int assemble_system(Matrix** K, Matrix** M, double** coord, size_t** boundary_no
   return 0;
 }
 
-void visualize_in_gmsh(double* SOL, int n_nodes){
+int visualize_in_gmsh(double* SOL, int n_nodes){
   int ierr;
 
   size_t *nodeTags=malloc(n_nodes*sizeof(size_t));
@@ -219,4 +219,5 @@ void visualize_in_gmsh(double* SOL, int n_nodes){
   gmshViewAddHomogeneousModelData(view_tag, 0, model_name,"NodeData", nodeTags, n_nodes, sol_3D, 3*n_nodes, 0., 3, -1, &ierr);
   gmshViewOptionSetNumber(view_tag, "VectorType", 5, &ierr);
   gmshViewOptionSetNumber(view_tag, "DisplacementFactor", 0.1, &ierr);
+  return view_tag;
 }

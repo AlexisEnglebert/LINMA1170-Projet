@@ -17,7 +17,11 @@ double get_k_frequency(FILE* file, double r1, double r2, double e, double l, dou
 	assemble_system(&K, &M, &coord, &boundary_nodes, &n_boundary_nodes, E, nu, rho);
 
     if(displacements != NULL){
-        *displacements = calloc(sizeof **displacements, k*K->n);
+        *displacements = calloc(sizeof **displacements, (k+1)*K->n);
+
+        for(int p = 0; p < K->n; p++){
+            (*displacements)[p] = 0;
+        }
     }
 
     if(n_nodes != NULL){
@@ -63,8 +67,8 @@ double get_k_frequency(FILE* file, double r1, double r2, double e, double l, dou
                     i_bnd++;
                     continue;
                 }
-                (*displacements)[l*K->n+2*(i)]   = v[2*iv];
-                (*displacements)[l*K->n+2*(i)+1] = v[2*iv+1];
+                (*displacements)[(1+l)*K->n+2*(i)]   = v[2*iv];
+                (*displacements)[(1+l)*K->n+2*(i)+1] = v[2*iv+1];
                 iv++;
             }
         }
