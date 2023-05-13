@@ -178,7 +178,6 @@ void get_boundary_nodes (size_t** bnd_nTags, size_t* bnd_nTags_n){
     size_t  cc_n;
     if (strcmp(name,"clamped") == 0){
       gmshModelMeshGetNodesForPhysicalGroup(dimTags[i],dimTags[i+1], bnd_nTags, bnd_nTags_n, &cc, &cc_n, &ierr);
-      printf("clamped found physical group %d\n",dimTags[i+1]);
     }
     if (cc) free(cc);
     free (name);
@@ -224,9 +223,6 @@ void visualize_in_gmsh(double* SOL, int n_nodes){
   int ierr;
 
   size_t *nodeTags=malloc(n_nodes*sizeof(size_t));
-  // double *coord_bad = 0;
-  // get_nodes (&nodeTags, &nNodes, &coord_bad, &temp);
-
 
   double* sol_3D = malloc(3*n_nodes*sizeof(double)); // in gmsh, vectors are 3D
   for (int i=0; i<n_nodes; i++){
@@ -236,8 +232,7 @@ void visualize_in_gmsh(double* SOL, int n_nodes){
     sol_3D[3*i+2] = 0.;
   }
 
-  // for (int i=0; i<3*n_nodes; i++) printf("%f \n", sol_3D[i]);
-  // printf("\n");
+
   char *model_name;
   gmshModelGetCurrent(&model_name, &ierr);
   int view_tag = gmshViewAdd("displacement", -1, &ierr);

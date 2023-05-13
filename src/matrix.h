@@ -1,5 +1,6 @@
 #pragma once
 #include <errno.h>
+#include <string.h>
 #include <cblas.h>
 #include <lapack.h>
 #include <lapacke.h>
@@ -36,3 +37,8 @@ void print_vector(double * v, int n);   // imprime le contenu d'un vecteur (tabl
 void print_matrix(Matrix * A);          // imprime le contenu d'une matrice
 
 int is_symmetric(Matrix * K);
+
+
+lapack_int mat_inv_blas(Matrix* A);
+int mat_mul_blas(Matrix* A, Matrix* B, Matrix* C);
+int mat_mul_vector_blas(Matrix* A, double* vector, double* out);

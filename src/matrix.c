@@ -103,13 +103,10 @@ Matrix *allocate_matrix(int m, int n)
 }
 
 void free_matrix(Matrix * mat) {
+		
 	free(mat->a);
 	free(mat->data);
 	free(mat);
-	
-	mat->data = NULL;
-    mat->a = NULL;
-    mat = NULL;
 }
 
 void print_vector(double * v, int n) {
