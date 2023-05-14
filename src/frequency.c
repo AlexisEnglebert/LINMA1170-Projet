@@ -3,7 +3,6 @@
 double get_k_frequency(FILE* file, double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh,
                     double** displacements, int* n_nodes)
 {
-    printf("got for l : %.4lf\n",l);
 	double E = 0.7e11;  // Young's modulus for Aluminum
 	double nu = 0.3;    // Poisson coefficient
 	double rho = 3000;  // Density of Aluminum
@@ -94,8 +93,8 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
     double end = maxL;
     int n = 0;
     int n_max = (int)1000;
-    double target_freq = 784.0;
-    //Our target is 784
+    double target_freq = 740.0;
+    //Our target is 740
     double freq = 0.0;
     while(n < n_max){
         double middle = (start + end) / 2.0;

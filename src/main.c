@@ -39,15 +39,25 @@ int main (int argc, char *argv[]) {
 	int n_vibration_modes = atoi(argv[1]);
 	double meshSizeFactor = 0.3;
 
+	double iner_radius = 6e-3;
+	double outer_radius = 11e-3;
+	double handle_length = 38e-3;
 
-	double correct_l = bin_search_l(6e-3, 11e-3,38e-3,0.3, meshSizeFactor, 1e-2);
+	double correct_l = bin_search_l(iner_radius, outer_radius, handle_length, 0.3, meshSizeFactor, 1e-1);
 	printf("correct_l = %lf\n", correct_l);
 
 	double* animation_points;
 	int n_nodes;
 	
 	
-	get_k_frequency(file, 6e-3, 11e-3, 38e-3, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
+	get_k_frequency(file, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
+	//get_k_frequency(file,0.0036597497, 0.0221188348, 0.0391091060, 0.0775741736, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
+
+
+
+	// Compute the harmony now :)
+	//double new_l = bin_search_l();
+
 
 
 	for(int i = 0; i < n_vibration_modes+1; i++){
