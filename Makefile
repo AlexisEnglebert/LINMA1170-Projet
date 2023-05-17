@@ -4,8 +4,8 @@ CFLAGS=-Wall -g -std=gnu99 -O2 #Add -Werror
 GMSH_DIR := ../gmsh-sdk
 BLAS_DIR := ../OpenBlas
 
-INC_DIR := -I $(GMSH_DIR)/include -I $(BLAS_DIR)/include
-LIB_DIR := -L $(GMSH_DIR)/lib -L $(BLAS_DIR)/lib
+INC_DIR := -I $(GMSH_DIR)/include -I $(BLAS_DIR)/include -I /usr/local/include
+LIB_DIR := -L $(GMSH_DIR)/lib -L $(BLAS_DIR)/lib -L /usr/local/lib
 
 LDFLAGS := -Wl,-rpath,$(GMSH_DIR)/lib,-rpath,$(BLAS_DIR)/lib
 LDLIBS := -lgmsh -llapack -lm -lopenblas
