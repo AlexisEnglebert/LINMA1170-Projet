@@ -121,7 +121,7 @@ int main (int argc, char *argv[]) {
 
 	if(compute_sound){
 		InitSoundSystem();
-		PlayFrequency(frequencies[1], 3000);
+		PlayFrequency(frequencies[1], 4000);
 		CloseSoundSystem();
 	}
 

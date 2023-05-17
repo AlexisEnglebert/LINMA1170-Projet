@@ -1,8 +1,9 @@
 #include "sound.h"
 
-const static double AMPLITUDE = 10000.0; 
+static double AMPLITUDE = 10000.0; 
 const static double SAMPLE_RATE = 44100.0; 
 static double frequency = 440.0f;
+static double sub = 0.0;
 
 void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes)
 {
@@ -15,6 +16,10 @@ void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes)
         double time = (double)(*sample_nr + sid) / (double)SAMPLE_RATE;
         buffer[2*sid] = (AMPLITUDE * sinf(2.0f * M_PI * frequency * time));
         buffer[2*sid+1] = (AMPLITUDE * sinf(2.0f * M_PI * frequency * time));
+
+        if(AMPLITUDE >= 0)
+            AMPLITUDE -= sub;
+        
     }
     *sample_nr += length;
 }
@@ -47,6 +52,8 @@ int InitSoundSystem(){
 void PlayFrequency(double freq, uint32_t duration){
     
     frequency = 2*freq;
+    AMPLITUDE = 10000.0f;
+    sub = 500.0/(double)duration;
 
     SDL_PauseAudio(0);
     SDL_Delay(duration);
