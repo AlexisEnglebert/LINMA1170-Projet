@@ -14,12 +14,23 @@ make
 ```
 # Run
 ```code
-./build/project <k> <out> -v 0
+./project <k> <out> [-s -H -h] [-o outputFile]
 ```
+Here is an exemple
+````code
+./build/project 6 out.bin -v 0 -s -o fork.msh 
+````
 ```
-./project <k> <out>
+Usage: 
+./project <k> <out> [-s -H -h] [-o outputFile]
 ---------------------------- 
-- k is the number of frequencies to compute. 
-- out is the output file to write the frequencies. 
+
+ - k is the number of frequencies to compute. 
+ - out is the output file to write the frequencies. 
+ [-H] enable Harmony design
+ [-s] enable sound simultation
+ [-h] print the usage
+ [-o] output file for geometry /!\ MUST END WITH .msh /!\ 
+ 
 ```
 
