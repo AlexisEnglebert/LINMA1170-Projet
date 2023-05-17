@@ -6,7 +6,7 @@ You need:
 2. [GMSH](https://gitlab.onelab.info/gmsh/gmsh)
 3. [SDL](https://wiki.libsdl.org/SDL2/Installation)
 
-The firt 2 library *MUST* be in the parent directory of the projet. *NOT* inside the project.
+The first 2 library *MUST* be in the parent directory of the projet. *NOT* inside the project.
 
 # Compilation 
 ```code
