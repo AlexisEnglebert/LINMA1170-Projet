@@ -2,9 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gmshc.h>
+#include <time.h>
+
+
 
 #include "frequency.h"
 #include "animation.h"
+#include "sound.h"
 
 
 int main (int argc, char *argv[]) {
@@ -17,7 +21,7 @@ int main (int argc, char *argv[]) {
 			"- out is the output file to write the frequencies. \n "
 			"\n");
 		return -1;
-	} 
+	}
 	
 	FILE * file = stdout;
 	
@@ -43,21 +47,16 @@ int main (int argc, char *argv[]) {
 	double outer_radius = 11e-3;
 	double handle_length = 38e-3;
 
+	clock_t timer;
+	timer = clock();
+
 	double correct_l = bin_search_l(iner_radius, outer_radius, handle_length, 0.3, meshSizeFactor, 1e-1);
 	printf("correct_l = %lf\n", correct_l);
 
 	double* animation_points;
 	int n_nodes;
-	
-	
-	get_k_frequency(file, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
-	//get_k_frequency(file,0.0036597497, 0.0221188348, 0.0391091060, 0.0775741736, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
-
-
-
-	// Compute the harmony now :)
-	//double new_l = bin_search_l();
-
+	double * frequencies = calloc(sizeof *frequencies, n_vibration_modes);
+	get_k_frequency(file, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes, frequencies);
 
 
 	for(int i = 0; i < n_vibration_modes+1; i++){
@@ -65,11 +64,24 @@ int main (int argc, char *argv[]) {
 		generate_animation(0, i, animation_points, n_nodes);
  	}
 	
+	timer = clock() - timer;
+
+	double time_solve_naif = (double)((1000 * timer) / (double)CLOCKS_PER_SEC);
+	printf("TIME USED %.20lf\n", time_solve_naif);
 	
+
+
+
 	gmshViewCombine("steps", "all", 1, 1, &ierr);
 	gmshOptionSetNumber("View.AdaptVisualizationGrid", 1, &ierr); 
 	gmshOptionSetNumber("View.LightLines", 0, &ierr); 
 	gmshOptionSetNumber("View.SmoothNormals", 1, &ierr); 
+
+	InitSoundSystem();
+	//PlayFrequency(frequencies[1], 2000);
+	PlayFrequency(440.0, 10000);
+	CloseSoundSystem();
+
 
 	gmshFltkRun(&ierr);
 	
