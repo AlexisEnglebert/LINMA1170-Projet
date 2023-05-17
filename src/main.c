@@ -78,7 +78,8 @@ int main (int argc, char *argv[]) {
 	gmshOptionSetNumber("View.SmoothNormals", 1, &ierr); 
 
 	InitSoundSystem();
-	PlayFrequency(frequencies[1], 2000);
+	//PlayFrequency(frequencies[1], 2000);
+	PlayFrequency(440.0, 10000);
 	CloseSoundSystem();
 
 

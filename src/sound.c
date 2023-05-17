@@ -1,20 +1,22 @@
 #include "sound.h"
 
-const static int AMPLITUDE = 10000;
-const static int SAMPLE_RATE = 41000; 
+const static double AMPLITUDE = 10000.0; 
+const static double SAMPLE_RATE = 44100.0; 
 static double frequency = 440.0f;
 
 void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes)
 {
     Sint16 *buffer = (Sint16*)raw_buffer;
-    int length = bytes / 2;
-    int sample_nr = *(int*)user_data;
+    int length = bytes / 4;
+    int* sample_nr = user_data;
 
-    for(int i = 0; i < length; i++, sample_nr++)
+    for(int sid = 0; sid < length; sid++)
     {
-        double time = (double)sample_nr / (double)SAMPLE_RATE;
-        buffer[i] = (Sint16)(AMPLITUDE * sinf(2.0f * M_PI * frequency * time));
+        double time = (double)(*sample_nr + sid) / (double)SAMPLE_RATE;
+        buffer[2*sid] = (AMPLITUDE * sinf(2.0f * M_PI * frequency * time));
+        buffer[2*sid+1] = (AMPLITUDE * sinf(2.0f * M_PI * frequency * time));
     }
+    *sample_nr += length;
 }
 
 int InitSoundSystem(){
@@ -44,7 +46,7 @@ int InitSoundSystem(){
 }
 void PlayFrequency(double freq, uint32_t duration){
     
-    frequency = freq;
+    frequency = 2*freq;
 
     SDL_PauseAudio(0);
     SDL_Delay(duration);
@@ -54,5 +56,6 @@ void PlayFrequency(double freq, uint32_t duration){
 int CloseSoundSystem(){
     
     SDL_CloseAudio();
+    SDL_Quit();
     return 0;
 };
