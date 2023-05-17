@@ -55,8 +55,8 @@ int main (int argc, char *argv[]) {
 
 	double* animation_points;
 	int n_nodes;
-	
-	get_k_frequency(file, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes);
+	double * frequencies = calloc(sizeof *frequencies, n_vibration_modes);
+	get_k_frequency(file, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes, frequencies);
 
 
 	for(int i = 0; i < n_vibration_modes+1; i++){
@@ -78,7 +78,7 @@ int main (int argc, char *argv[]) {
 	gmshOptionSetNumber("View.SmoothNormals", 1, &ierr); 
 
 	InitSoundSystem();
-	PlayFrequency(740.0, 2000);
+	PlayFrequency(frequencies[1], 2000);
 	CloseSoundSystem();
 
 

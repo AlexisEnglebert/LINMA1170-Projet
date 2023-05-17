@@ -1,9 +1,8 @@
 #include "sound.h"
 
-const int AMPLITUDE = 10000;
-const int SAMPLE_RATE = 41000; 
-
-double frequency = 440.0f;
+const static int AMPLITUDE = 10000;
+const static int SAMPLE_RATE = 41000; 
+static double frequency = 440.0f;
 
 void audio_callback(void *user_data, Uint8 *raw_buffer, int bytes)
 {
@@ -53,6 +52,7 @@ void PlayFrequency(double freq, uint32_t duration){
 }
 
 int CloseSoundSystem(){
+    
     SDL_CloseAudio();
     return 0;
 };

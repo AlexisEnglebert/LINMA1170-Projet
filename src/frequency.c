@@ -1,7 +1,7 @@
 #include "frequency.h"
 
 double get_k_frequency(FILE* file, double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh,
-                    double** displacements, int* n_nodes)
+                    double** displacements, int* n_nodes, double* frequencies)
 {
 	double E = 0.7e11;  // Young's modulus for Aluminum
 	double nu = 0.3;    // Poisson coefficient
@@ -44,7 +44,6 @@ double get_k_frequency(FILE* file, double r1, double r2, double e, double l, dou
 	double lambda = 0.0;
     double freq = 0.0;
 	
-    //! 2 BECAUSE FIRST MODE IS INAUDIBLE !!!!!!!!!!
 	for(int l = 0; l < k; l++) {
 		lambda = power_iteration(A, v);
 		freq = 1./(2*M_PI*sqrt(lambda));
@@ -56,11 +55,17 @@ double get_k_frequency(FILE* file, double r1, double r2, double e, double l, dou
 			}
 		}
         
-        if(file != NULL)
+        if(file != NULL){
             fprintf(file, "%.9lf ", freq);
+        }
 
-        if(l%2 != 0)
+        if(l%2 != 0){
             printf("Audible Frequency %.9f\n", freq);
+        }
+
+        if(frequencies){
+            frequencies[l] = freq;
+        }
 
         if(vis_in_gmsh && displacements != NULL){
             int iv = 0, i_bnd = 0; 
@@ -103,8 +108,9 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
         }
         
         printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
-
-        freq = get_k_frequency(NULL, r1, r2, e, middle, meshSizeFactor,2 ,false, NULL, NULL);
+        
+        //! 2 BECAUSE FIRST MODE IS INAUDIBLE !!!!!!!!!!
+        freq = get_k_frequency(NULL, r1, r2, e, middle, meshSizeFactor,2 ,false, NULL, NULL, NULL);
 
         if(fabs(target_freq - freq) < tolerence){
             return middle;
