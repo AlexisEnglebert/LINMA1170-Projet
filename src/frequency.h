@@ -9,8 +9,23 @@
 #include "design.h"
 #include "eigen.h"
 
-double get_k_frequency(FILE* file, double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh,
+double get_k_frequency(FILE* file, char* outGEO, double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh,
                     double** displacements, int* n_nodes, double* frequencies);
 
+double get_k_frequency_MTFS(FILE* file, char* outGEO,double handle_length, double base_prongs_length, double space_between_base_branch,
+                             double space_between_second_layer, double second_prongs_length, double meshSizeFactor, int k, bool vis_in_gmsh,
+                    double** displacements, int* n_nodes, double* frequencies);
+                    
 //! OUI POUR L'INSTANT ON DÉFINIT QUEL PARAMÈTRE ON CHERCHE MAIS ÇA SERA MODULABLE APRÈS ......
 double bin_search_l(double r1, double r2, double e, double maxL, double meshSizeFactor, double tolerence);
+
+
+//MOCHE MAIS BON ON EST PLUS À CA PRET...
+double bin_search_MTFS_first_l(double handle_length, double maxL, double space_between_base_branch,
+                             double space_between_second_layer, double second_prongs_length, double meshSizeFactor,
+                            double tolerence);
+
+
+double bin_search_MTFS_second_l(double handle_length, double base_prongs_length, double space_between_base_branch,
+                             double space_between_second_layer, double maxL, double meshSizeFactor,
+                            double tolerence);
