@@ -11,7 +11,7 @@ CC_SDL=-lSDL `sdl-config --cflags --libs`
 
 
 LDFLAGS := -Wl,-rpath,$(GMSH_DIR)/lib,-rpath,$(BLAS_DIR)/lib
-LDLIBS := -lgmsh -llapack -lm -lopenblas
+LDLIBS := -lgmsh -llapack -llapacke -lm -lopenblas
 
 SRC_DIRS = src
 OUTDIR=build
