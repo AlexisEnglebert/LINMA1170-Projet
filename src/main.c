@@ -19,7 +19,7 @@ void usage()
 			" - k is the number of frequencies to compute. \n "
 			"- out is the output file to write the frequencies. \n "
 			"[-H] enable Harmony design\n "
-			"[-s] enable sound simultation\n "
+			"[-s] enable sound simulation\n "
 			"[-h] print the usage\n "
 			"[-o] output file for geometry /!\\ MUST END WITH .msh /!\\ \n "
 			"\n");
@@ -68,9 +68,8 @@ int main (int argc, char *argv[]) {
 	double * frequencies = calloc(sizeof *frequencies, n_vibration_modes);
 	int n_nodes;
 
-
-	clock_t timer;
-	timer = clock();
+	struct timespec start;
+	clock_gettime(CLOCK_MONOTONIC, &start);
 
 	if(compute_harmony){
 		double meshSizeFactor = 0.5;
@@ -107,12 +106,15 @@ int main (int argc, char *argv[]) {
 		if(i==0) continue;
 		generate_animation(0, i, animation_points, n_nodes);
  	}
-	
-	timer = clock() - timer;
 
-	double time_solve_naif = (double)((1000 * timer) / (double)CLOCKS_PER_SEC);
-	printf("TIME USED %.20lf\n", time_solve_naif);
-	
+	struct timespec end;
+	clock_gettime(CLOCK_MONOTONIC, &end);
+
+	double const time_solve_naif_sec = (double) (end.tv_sec - start.tv_sec);
+	double const time_solve_naif_nsec = (double) (end.tv_nsec - start.tv_nsec) / 1e9;
+
+	double const time_solve_naif = time_solve_naif_sec + time_solve_naif_nsec;
+	printf("TIME TAKEN %g seconds\n", time_solve_naif);
 
 	gmshViewCombine("steps", "all", 1, 1, &ierr);
 	gmshOptionSetNumber("View.AdaptVisualizationGrid", 1, &ierr); 
