@@ -43,3 +43,6 @@ lapack_int mat_inv_blas(Matrix* A);
 int mat_mul_blas(Matrix* A, Matrix* B, Matrix* C);
 int mat_mul_vector_blas(Matrix* A, double* vector, double* out);
 lapack_int mat_lu_blas(Matrix* A, int* ipiv);
+
+int mat_inv(Matrix* A);
+int mat_mul(Matrix* A, Matrix* B, Matrix* C);

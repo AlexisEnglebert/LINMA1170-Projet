@@ -4,13 +4,83 @@
 #include <math.h>
 
 #include "matrix.h"
+#include "lu.h"
 
+Matrix* copy_matrix(Matrix* mat) {
+	Matrix* const copy = allocate_matrix(mat->m, mat->n);
+
+	for (size_t i = 0; i < (size_t) mat->n; i++) {
+		memcpy(copy->a[i], mat->a[i], mat->m * sizeof *copy->a[i]);
+	}
+
+	return copy;
+}
+
+int mat_inv(Matrix* A_inv) {
+	Matrix* const A = copy_matrix(A_inv);
+	double* const v = calloc(A->m, sizeof *v);
+
+	lu(A);
+
+	for (size_t i = 0; i < A->m; i++) {
+		// set v to the ith column of I
+
+		memset(v, 0, A->m * sizeof *v);
+		v[i] = 1;
+
+		// solve K(K^-1)_i = I_i <=> LU(K^-1)_i = I_i for (K^-1)_i
+
+		solve(A, v);
+
+		for (size_t j = 0; j < A->m; j++)
+			A_inv->a[i][j] = v[j];
+	}
+
+	free_matrix(A);
+	free(v);
+
+	return 0;
+}
+
+int mat_mul(Matrix* A, Matrix* B, Matrix* C) {
+	if (A->m != B->n) {
+		return -1;
+	}
+
+	// start by transposing second matrix so that we don't have to jump around memory so much
+
+	Matrix* const B_T = allocate_matrix(B->n, B->m);
+
+	for (size_t i = 0; i < (size_t) B->m; i++) {
+		for (size_t j = 0; j < (size_t) B->n; j++)
+			B_T->a[i][j] = B->a[j][i];
+	}
+
+	// actually do matrix multiplication
+
+	for (size_t i = 0; i < (size_t) A->n; i++) {
+		for (size_t j = 0; j < (size_t) B->m; j++) {
+			double acc = 0;
+
+			for (size_t k = 0; k < (size_t) A->n; k++)
+				acc += A->a[i][k] * B_T->a[j][k];
+
+			C->a[i][j] = acc;
+		}
+	}
+
+	free_matrix(B_T);
+
+	return 0;
+}
 
 
 lapack_int mat_inv_blas(Matrix* A)
 {
     int ipiv[A->n+1];
     lapack_int ret;
+
+	 printf("test\n");
 
     ret =  LAPACKE_dgetrf(LAPACK_COL_MAJOR,
 						A->n,
