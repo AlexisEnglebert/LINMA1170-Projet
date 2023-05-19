@@ -5,7 +5,7 @@
 
 double get_k_frequency_MTFS(FILE* file, char* outGEO,double handle_length, double base_prongs_length, double space_between_base_branch,
                              double space_between_second_layer, double second_prongs_length, double meshSizeFactor, int k, bool vis_in_gmsh,
-                    double** displacements, int* n_nodes, double* frequencies)
+                    double** displacements, int* n_nodes, double* frequencies, bool use_blas)
 {
 	double E = 0.7e11;  // Young's modulus for Aluminum
 	double nu = 0.3;    // Poisson coefficient
@@ -39,8 +39,17 @@ double get_k_frequency_MTFS(FILE* file, char* outGEO,double handle_length, doubl
 	Matrix *KM_new = allocate_matrix(K_new->m, K_new->n);
 
     /*****************Méthode 1***********************/
-	mat_inv_blas(K_new);
-	mat_mul_blas(K_new,M_new,KM_new);
+
+	if (use_blas) {
+		mat_inv_blas(K_new);
+		mat_mul_blas(K_new,M_new,KM_new);
+	}
+
+	else {
+		mat_inv(K_new);
+		mat_mul(K_new, M_new, KM_new);
+	}
+
     /***********************************************$*/
     
 	// Power iteration + deflation to find k largest eigenvalues
@@ -100,7 +109,7 @@ double get_k_frequency_MTFS(FILE* file, char* outGEO,double handle_length, doubl
 
 
 double get_k_frequency(FILE* file, char* outGEO, double r1, double r2, double e, double l, double meshSizeFactor, int k, bool vis_in_gmsh,
-                    double** displacements, int* n_nodes, double* frequencies)
+                    double** displacements, int* n_nodes, double* frequencies, bool use_blas)
 {
 	double E = 0.7e11;  // Young's modulus for Aluminum
 	double nu = 0.3;    // Poisson coefficient
@@ -133,8 +142,15 @@ double get_k_frequency(FILE* file, char* outGEO, double r1, double r2, double e,
 	Matrix *KM_new = allocate_matrix(K_new->m, K_new->n);
 
     /*****************Méthode 1***********************/
-	mat_inv_blas(K_new);
-	mat_mul_blas(K_new,M_new,KM_new);
+	if (use_blas) {
+		mat_inv_blas(K_new);
+		mat_mul_blas(K_new,M_new,KM_new);
+	}
+
+	else {
+		mat_inv(K_new);
+		mat_mul(K_new, M_new, KM_new);
+	}
     /***********************************************$*/
     
 	// Power iteration + deflation to find k largest eigenvalues
@@ -192,7 +208,7 @@ double get_k_frequency(FILE* file, char* outGEO, double r1, double r2, double e,
     return freq;
 }
 
-double bin_search_l(double r1, double r2, double e, double maxL, double meshSizeFactor, double tolerence){
+double bin_search_l(double r1, double r2, double e, double maxL, double meshSizeFactor, double tolerence, bool use_blas){
     double start = 0;
     double end = maxL;
     int n = 0;
@@ -207,9 +223,9 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
         }
         
         printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
-        
+
         //! 2 BECAUSE FIRST MODE IS INAUDIBLE !!!!!!!!!!
-        freq = get_k_frequency(NULL,NULL, r1, r2, e, middle, meshSizeFactor,2 ,false, NULL, NULL, NULL);
+        freq = get_k_frequency(NULL,NULL, r1, r2, e, middle, meshSizeFactor,2 ,false, NULL, NULL, NULL, use_blas);
 
         if(fabs(target_freq - freq) < tolerence){
             return middle;
@@ -230,7 +246,7 @@ double bin_search_l(double r1, double r2, double e, double maxL, double meshSize
 
 double bin_search_MTFS_first_l(double handle_length, double maxL, double space_between_base_branch,
                              double space_between_second_layer, double second_prongs_length, double meshSizeFactor,
-                            double tolerence)
+                            double tolerence, bool use_blas)
 {
     double start = 0;
     double end = maxL;
@@ -248,7 +264,7 @@ double bin_search_MTFS_first_l(double handle_length, double maxL, double space_b
         printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
         
         //! 2 BECAUSE FIRST MODE IS INAUDIBLE !!!!!!!!!!
-        freq = get_k_frequency_MTFS(NULL,NULL, handle_length, middle,space_between_base_branch, space_between_second_layer, second_prongs_length, meshSizeFactor, 2, false, NULL, NULL, NULL);
+        freq = get_k_frequency_MTFS(NULL,NULL, handle_length, middle,space_between_base_branch, space_between_second_layer, second_prongs_length, meshSizeFactor, 2, false, NULL, NULL, NULL, use_blas);
         if(fabs(target_freq - freq) < tolerence){
             return middle;
         }
@@ -267,7 +283,7 @@ double bin_search_MTFS_first_l(double handle_length, double maxL, double space_b
 
 double bin_search_MTFS_second_l(double handle_length, double base_prongs_length, double space_between_base_branch,
                              double space_between_second_layer, double maxL, double meshSizeFactor,
-                            double tolerence)
+                            double tolerence, bool use_blas)
 {
     double start = 0;
     double end = maxL;
@@ -284,7 +300,7 @@ double bin_search_MTFS_second_l(double handle_length, double base_prongs_length,
         
         printf("start %.8lf end %.8lf middle : %.20lf\n",start, end, middle);
         
-        freq = get_k_frequency_MTFS(NULL, NULL, handle_length, base_prongs_length,space_between_base_branch, space_between_second_layer, middle, meshSizeFactor, 4, false, NULL, NULL, NULL);
+        freq = get_k_frequency_MTFS(NULL, NULL, handle_length, base_prongs_length,space_between_base_branch, space_between_second_layer, middle, meshSizeFactor, 4, false, NULL, NULL, NULL, use_blas);
 
         if(fabs(target_freq - freq) < tolerence){
             return middle;

@@ -18,6 +18,7 @@ void usage()
 			"---------------------------- \n\n"
 			" - k is the number of frequencies to compute. \n "
 			"- out is the output file to write the frequencies. \n "
+			"[-b] disable BLAS\n"
 			"[-H] enable Harmony design\n "
 			"[-s] enable sound simulation\n "
 			"[-h] print the usage\n "
@@ -34,6 +35,7 @@ int main (int argc, char *argv[]) {
 	
 	FILE* file = fopen(argv[2], "w");
 
+	bool use_blas = true;
 	bool compute_harmony = false;
 	bool compute_sound = false;
 	char* geo_output = NULL;
@@ -49,6 +51,9 @@ int main (int argc, char *argv[]) {
 			geo_output = argv[i+1];
 			i++;
 		}
+
+		else if (strcmp(argv[i], "-b") == 0)
+			use_blas = false;
 	}
 
 
@@ -78,15 +83,15 @@ int main (int argc, char *argv[]) {
 		double space_second_between = 1e-2 / 4.0f;
 
 		//FIRST FIND THE SECOND LAYER THEN THE FIRST LAYER ....
-		double second_layer_phong_length = bin_search_MTFS_second_l(handle_length, 6e-2, space_between, space_second_between, 0.3, meshSizeFactor, 1e-1);
+		double second_layer_phong_length = bin_search_MTFS_second_l(handle_length, 6e-2, space_between, space_second_between, 0.3, meshSizeFactor, 1e-1, use_blas);
 		
 		printf("second layer phong length is %.10lf\n", second_layer_phong_length);
 		
-		double first_layer_phong_length = bin_search_MTFS_first_l(handle_length,0.3, space_between, space_second_between, second_layer_phong_length, meshSizeFactor, 1e-1);
+		double first_layer_phong_length = bin_search_MTFS_first_l(handle_length,0.3, space_between, space_second_between, second_layer_phong_length, meshSizeFactor, 1e-1, use_blas);
 		
 		printf("first layer phong length is %.10lf\n", first_layer_phong_length);
 		
-		get_k_frequency_MTFS(file, geo_output, handle_length, first_layer_phong_length,space_between, space_second_between, second_layer_phong_length, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes, frequencies);
+		get_k_frequency_MTFS(file, geo_output, handle_length, first_layer_phong_length,space_between, space_second_between, second_layer_phong_length, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes, frequencies, use_blas);
 	
 	}else{
 		double meshSizeFactor = 0.3;
@@ -94,9 +99,9 @@ int main (int argc, char *argv[]) {
 		double outer_radius = 11e-3;
 		double handle_length = 38e-3;
 
-		double correct_l = bin_search_l(iner_radius, outer_radius, handle_length, 0.1, meshSizeFactor, 1e-1);
+		double correct_l = bin_search_l(iner_radius, outer_radius, handle_length, 0.1, meshSizeFactor, 1e-1, use_blas);
 		printf("phong length is: %.10lf\n", correct_l);
-		get_k_frequency(file, geo_output, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes, frequencies);
+		get_k_frequency(file, geo_output, iner_radius, outer_radius, handle_length, correct_l, meshSizeFactor, n_vibration_modes, true, &animation_points, &n_nodes, frequencies, use_blas);
 
 	}
 
